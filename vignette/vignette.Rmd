@@ -1,0 +1,42 @@
+---
+title: FARS Vignette
+author: "Adam Centurione"
+date: "04/01/2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndex Entry{fars4}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UFC-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#FARS Analysis with fars4
+This package allows its useres to import .csv files of fatal car crash data and perform comparitive analysis and visualization of that data. Functions involved include:
+
+make_filename(): to create a filename for the year(s) to be analyzed
+
+fars_read(): to create a tibble from the dataframe imported from the .csv file
+
+fars_read_years(): to reduce the data to the only the months which they occured and the number     of crashes, for the years being analyzed
+
+fars_summarize_years(): to create a final summary table of the fars_read_years() outpute for      one or multiple years
+
+fars_map_state(): to create a plot of all the fatal crashes which occured within a year for a specific state
+
+For example:
+##fars_summarize_years()
+```{r echo= TRUE}
+fars_summarize_years(2013:2015)
+```
+
+##fars_map_state()
+
+State of Florida fatal crash locations for 2013:
+```{r echo=FALSE}
+fars_map_state(12, 2013)
+```
+
+While the final two functions are the most meaningful, the first three are mostly used to format the data into a manner which can be analyzed. 
