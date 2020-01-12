@@ -2,26 +2,33 @@
 % Please edit documentation in R/documents.R
 \name{fars_read}
 \alias{fars_read}
-\title{fars_read()}
+\title{Read FARS Data.}
 \usage{
 fars_read(filename)
 }
 \arguments{
-\item{make_filename}{A string of characters located in WD}
+\item{filename}{A character string giving the filename of the FARS data.}
 }
 \value{
-This function returns a tibble of FARS data. As a side
-    side effect, it also prints the tibble.
+This function returns a tibble containing the FARS data. If an
+  incorrect filename is entered the function will stop.
 }
 \description{
-\code{fars_read} reads FARS data .csv and converts it to tibble i.e. dplyr::tbl_df(). it used with
- \code{\link{fars_summarize_years}}, \code{\link{fars_read_years}}, \code{\link{make_filename}}
-  and \code{\link{fars_map_state}}.
+\code{fars_read} reads FARS data into the environment.
 }
-\note{
-if filename is not in WD than it returns an error
+\details{
+This function reads data from the  US National Highway Traffic Safety
+  Administration's Fatality Analysis Reporting System (FARS), given a
+  filename for the data. It returns a tibble of the data. For this function
+  to work properly, a filename pointing to an existing file must be given.
 }
 \examples{
-fars_read("accident_2015.csv.bz2")
+full_filename <- system.file('extdata', 'accident_2013.csv.bz2',
+                             package = 'farsdata')
+fars_read(filename = full_filename)
+
+\dontrun{
+fars_read(filename = 'filedoesnotexist')
+}
 
 }

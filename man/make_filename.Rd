@@ -2,27 +2,37 @@
 % Please edit documentation in R/documents.R
 \name{make_filename}
 \alias{make_filename}
-\title{make_filename}
+\title{Make FARS Filename.}
 \usage{
 make_filename(year)
 }
 \arguments{
-\item{fars_summarize_years}{year: an interger value for the year in
-the FARS data sourced from the fars_summarize_years function}
-
-\item{fars_map_state}{year: an integer value for year in the FARS data sourced from the mapping
-function.}
+\item{year}{An integer, or a string or numeric that can be coerced to a string,
+of the year of interest.}
 }
 \value{
-A character string identical to the filename of the corresponding year in the
-    WD
+this function returns a string that is the proper FARS data
+   filename for the given year.  Will return a filename with NA for the
+   year slot in the name if the year parameter cannot be coerced to an
+   integer.
 }
 \description{
-\code{make_file_name} Take as input the year and returns a character string
-   that's a filename in the working directory. Used in conjunction with
-   \code{\link{fars_summarize_year}} and \code{\link{fars_map_state}}.
+\code{make_filename} makes a properly formatted FARS filename given a year
+  as input.
+}
+\details{
+This function takes a year as input and produces a valid FARS filename. This
+  function is "dumb" in that it will not check whether the file
+  actually exists, or if the year is reasonable -- you could enter any number
+  you like.
 }
 \examples{
-make_filename(2015)
+make_filename(year = '2013')
+make_filename(year = 2013)
+
+\dontrun{
+make_filename(year = 'two thousand thirteen') #  error
+}
+
 
 }
