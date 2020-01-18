@@ -1,24 +1,41 @@
-#' Read FARS Data.
+#' make_filename
 #'
-#' \code{fars_read} reads FARS data into the environment.
+#' This function takes as input the \code{year} and returns a character string
+#'    that's a filename in the working directory. .
 #'
-#'  This function returns a tibble of the data. For this function
-#'   to work properly, a filename pointing to an existing file must be given.
+#'@param year a four digit interger
 #'
-#' @param filename A character string giving the filename of the FARS data.
-#' 
-#' @return This function returns a tibble containing the FARS data.
-#' 
-#' @examples
-#' full_filename <- system.file('extdata', 'accident_2013.csv.bz2',
-#'                              package = 'farsdata')
-#' fars_read(filename = full_filename)
 #'
-#' \dontrun{
-#' fars_read(filename = 'filedoesnotexist')
-#' }
+#'@return A character string identical to the filename of the corresponding year in the
+#'     WD
 #'
-#' @export
+#'@examples
+#' \dontrun{make_filename(2015)}
+#'
+#'@export
+make_filename <- function(year) {
+  year <- as.integer(year)
+  sprintf("accident_%d.csv.bz2", year)
+}
+
+#'
+#' fars_read()
+#'
+#'  \code{fars_read} reads FARS data .csv and converts it to tibble i.e. dplyr::tbl_df(). it will
+#'  return an error if the  \code{filename} is not in the working directory.
+#'
+#'@param filename A string of characters whose data is to become a tibble
+#'
+#'@return This function returns a tibble with the data from the filname.
+#'
+#'@importFrom readr read_csv
+#'@importFrom dplyr tbl_df
+#'
+#'@examples
+#'\dontrun{fars_read("accident_2015.csv.bz2")}
+#'
+#'
+#'@export
 fars_read <- function(filename) {
   if(!file.exists(filename))
     stop("file '", filename, "' does not exist")
@@ -28,67 +45,38 @@ fars_read <- function(filename) {
   dplyr::tbl_df(data)
 }
 
-
-#' Make FARS Filename.
 #'
-#' \code{make_filename} makes a properly formatted FARS filename given a year
-#'   as input.
+#' fars_read_years
 #'
-#' This function takes a year as input and produces a valid FARS filename.
+#' This function takes a 4 digit numeric \code{years} and produces a set of two columned tibbles
+#' (MONTH , year), indiced by year for each year in the FARS data. year <- c(2013, 2014, 2015), or,
+#' year <- c(2000:2020), etc. Returns a warning if the year is not in the data.
 #'
-#' @param year An integer, or a string or numeric that can be coerced to a string,
-#'   of the year of interest.
-#'   
-#' @return this function returns a string that is the proper FARS data
-#'    filename for the given year.  
-#'    
-#' @examples
-#' make_filename(year = '2013')
-#' make_filename(year = 2013)
+#'@param years A vector of the years which exist in the data, or which are
+#'    being searched for.
 #'
-#' \dontrun{
-#' make_filename(year = 'two thousand thirteen') #  error
-#' }
+#'@return The object returned is a list dataframes indiced by year where each
+#'   element of the tibble is an instance of a fatal autocollision during that month
+#'   and year.
 #'
+#'@importFrom magrittr "%>%"
 #'
-#' @export
-make_filename <- function(year) {
-  year <- as.integer(year)
-  filename <- sprintf("accident_%d.csv.bz2", year)
-  full_filename <- system.file('extdata', filename, package = 'farsdata')
-  full_filename
-}
-
-#' Read FARS files for one or more years.
+#'@importFrom dplyr mutate select
 #'
-#' \code{fars_read_years} produces a list of tibbles of FARS data, given an
-#'   input vector of years.
+#'@examples
+#'   \dontrun{fars_read_years(2013:2015)}
 #'
-#' This function takes a vector of years and produces a list of tibbles,
-#'   where each tibble is that year's FARS file year and MONTH observations.
+#'@note if 'years' vector has not been created in the global environment then it return  an
+#'   error
 #'
-#' @param years Vector of years' FARS files to open.
-#'    
-#' @importFrom magrittr "%>%"
-#' 
-#' @return This function returns a list of tibbles
-#' 
-#' @examples
-#' fars_read_years(years = c(2013, 2014, 2015))
-#' fars_read_years(years = 2013)
-#'
-#' \dontrun{
-#' fars_read_years(years = 2000) # error
-#' }
-#'
-#' @export
+#'@export
 fars_read_years <- function(years) {
   lapply(years, function(year) {
     file <- make_filename(year)
     tryCatch({
       dat <- fars_read(file)
       dplyr::mutate(dat, year = year) %>%
-        dplyr::select_(~ MONTH, ~ year)
+        dplyr::select(MONTH, year)
     }, error = function(e) {
       warning("invalid year: ", year)
       return(NULL)
@@ -96,77 +84,70 @@ fars_read_years <- function(years) {
   })
 }
 
-
-#' Produce a Summary of FARS Files.
+#' fars_summarize_years
 #'
-#' \code{fars_summarize_years} produces a summary tibble of FARS years and
-#'   months given a vector of years.
+#' A funtion which takes a 4 digit vector \code{years}, reads FARS data into a list of dataframes via
+#' \code{fars_read_years} then aggregates the the data into a tibble of the number of fatal
+#' autocollisions in each month spread across the span of years
 #'
-#' This function takes a vector of years, pulls the FARS data for
-#'   those years, and then produces a summary tibble.
-#'   
+#' @param years the numeric vector of years which are being search for.
 #'
-#' @param years Vector of years' FARS files to open.  Vector members must be
-#'    an integer, or a string or numeric that can be coerced to a string.
-#'    
-#' @return This function returns tibble where the first column is the month,
-#'   the second and following columns are the requested years, and the
-#'   rows for the year columns are the number of FARS observations for
-#'   that month/year combination.  
-#'   
+#' @return returns  tibble of the number of autocollisions in each month over the span
+#' of years
+#'
+#'@importFrom magrittr "%>%"
+#'@importFrom dplyr bind_rows group_by summarize
+#'@importFrom tidyr spread
+#'
 #' @examples
-#' fars_summarize_years(years = c(2013, 2014, 2015))
-#' fars_summarize_years(years = 2013)
-#'
-#' \dontrun{
-#' fars_summarize_years(years = 2000)
-#' }
+#' \dontrun{fars_summarize_years(years = c(2013, 2014, 2015))}
 #'
 #' @export
 fars_summarize_years <- function(years) {
   dat_list <- fars_read_years(years)
   dplyr::bind_rows(dat_list) %>%
-    dplyr::group_by_(~ year, ~ MONTH) %>%
-    dplyr::summarize_(n = ~ n()) %>%
-    tidyr::spread_('year', 'n')
+    dplyr::group_by(year, MONTH) %>%
+    dplyr::summarize(n = n()) %>%
+    tidyr::spread(year, n)
 }
 
-
-#' Map State Motor Vehicle Fatalities.
+#' fars_map_state
 #'
-#' \code{fars_map_state} maps state motor vehicle fatalities given a year and
-#'   state id number.
+#' this funtion takes an integer represting the \code{state.num} and another representing the
+#' \code{year} returns a plot of the coordinates of each fatal collision by the
+#'  state and year in which they occured. It does this with the use of \code{make_filename}, and
+#'  \code{fars_read}. It will throw and error if the numeric provided does not exist in the data set
+#'  for \code{state.num} and will return a message "no accident to plot" if there is no accident to
+#'  report for the state and year.
 #'
-#' This function takes a state number and a year, and draws
-#'   a state outline with dots to represent the location of motor vehicle
-#'   fatalities for that year. 
+#' @param state.num An integer value which identifies a state in the FARS dataset. values are 1:51,
+#' except 3
 #'
-#'   You must have library(mapdata) loaded in your namespace for this to work.
+#' @param year A 4 digit integer value indicating one of the years in the FARS dataset
 #'
-#' @param state.num Numerical code for US state.
-#' @param year  An integer, or a string or numeric that can be coerced to a string,
-#'   of the year of interest.
-#' @return NULL
-#' @examples
-#' library(mapdata)
-#' fars_map_state(12, 2014)
-#' fars_map_state(36, 2014)
+#' @return A plot of the states map with the coordinates of each fatality that year in
+#'      that state plotted as a point
 #'
-#' \dontrun{
-#' fars_map_state(3, 2014)   # error
-#' }
+#'@importFrom dplyr filter
+#'@importFrom maps map
+#'@importFrom graphics points
 #'
-#' @export
+#'
+#'@note if the state number isnt included in the dataset STATE column, it returns an error
+#'
+#'@example \dontrun{fars_map_state(1, 2013)}
+#'
+#'@export
 fars_map_state <- function(state.num, year) {
   filename <- make_filename(year)
   data <- fars_read(filename)
   state.num <- as.integer(state.num)
-  
+
   if(!(state.num %in% unique(data$STATE)))
     stop("invalid STATE number: ", state.num)
-  data.sub <- dplyr::filter_(data, ~ STATE == state.num)
+  data.sub <- dplyr::filter(data, STATE == state.num)
   if(nrow(data.sub) == 0L) {
-    message("no accidents to plot")
+    message("no accidents to  plot")
     return(invisible(NULL))
   }
   is.na(data.sub$LONGITUD) <- data.sub$LONGITUD > 900
@@ -177,3 +158,4 @@ fars_map_state <- function(state.num, year) {
     graphics::points(LONGITUD, LATITUDE, pch = 46)
   })
 }
+

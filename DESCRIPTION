@@ -7,7 +7,10 @@ Description: Functions for comparison and visualization of fatal traffica crash 
 License: GPL (>=2)
 Encoding: UTF-8
 LazyData: true
-Imports: dplyr, magrittr, tidyr, graphics, maps
+Imports: dplyr, magrittr, tidyr, graphics, maps (>= 3.1.1), readr, mapdata (>= 2.2-6), tibble
 RoxygenNote: 7.0.2
-Suggests: knitr
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr

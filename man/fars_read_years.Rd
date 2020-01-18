@@ -2,40 +2,29 @@
 % Please edit documentation in R/documents.R
 \name{fars_read_years}
 \alias{fars_read_years}
-\title{Read FARS files for one or more years.}
+\title{fars_read_years}
 \usage{
 fars_read_years(years)
 }
 \arguments{
-\item{years}{Vector of years' FARS files to open.  Vector members must be
-an integer, or a string or numeric that can be coerced to a string,
-of the year of interest.}
+\item{years}{A vector of the years which exist in the data, or which are
+being searched for.}
 }
 \value{
-This function returns a list of tibbles, where each tibble contains
-  containing the year and month from the observations in the corresponding
-  year's FARS data.  If an invalid year is given, the corresponding
-  list will be NULL.
+The object returned is a list dataframes indiced by year where each
+  element of the tibble is an instance of a fatal autocollision during that month
+  and year.
 }
 \description{
-\code{fars_read_years} produces a list of tibbles of FARS data, given an
-  input vector of years.
+This function takes a 4 digit numeric \code{years} and produces a set of two columned tibbles
+(MONTH , year), indiced by year for each year in the FARS data. year <- c(2013, 2014, 2015), or,
+year <- c(2000:2020), etc. Returns a warning if the year is not in the data.
 }
-\details{
-This function takes a vector of years and produces a list of tibbles,
-  where each tibble is that year's FARS file year and MONTH observations.
-  This is a simple function that strips all useful data out of the FARS
-  tables and produces a completely useless tibble, but is meant for
-  practice in the Coursera course.  For this function to work, valid
-  years should be entered. Invalid years will have a NULL entry in the
-  returned list.
+\note{
+if 'years' vector has not been created in the global environment then it return  an
+  error
 }
 \examples{
-fars_read_years(years = c(2013, 2014, 2015))
-fars_read_years(years = 2013)
-
-\dontrun{
-fars_read_years(years = 2000) # error
-}
+  \dontrun{fars_read_years(2013:2015)}
 
 }

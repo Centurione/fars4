@@ -7,24 +7,23 @@
 fars_map_state(state.num, year)
 }
 \arguments{
-\item{state.num}{An integer value which identifies a state in the FARS dataset}
+\item{state.num}{An integer value which identifies a state in the FARS dataset. values are 1:51,
+except 3}
 
-\item{year}{An integer value which for one of the years in the FARS dataset}
+\item{year}{A 4 digit integer value indicating one of the years in the FARS dataset}
 }
 \value{
 A plot of the states map with the coordinates of each fatality that year in
      that state plotted as a point
 }
 \description{
-\code{fars_map_state} returns a plot of the coordinates of each fatal collision by the
- state and year in which they occured
+this funtion takes an integer represting the \code{state.num} and another representing the
+\code{year} returns a plot of the coordinates of each fatal collision by the
+ state and year in which they occured. It does this with the use of \code{make_filename}, and
+ \code{fars_read}. It will throw and error if the numeric provided does not exist in the data set
+ for \code{state.num} and will return a message "no accident to plot" if there is no accident to
+ report for the state and year.
 }
 \note{
 if the state number isnt included in the dataset STATE column, it returns an error
-}
-\examples{
-library(mapdata)
-fars_map_state(12, 2014)
-fars_map_state(36, 2014)
-
 }

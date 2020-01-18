@@ -2,39 +2,23 @@
 % Please edit documentation in R/documents.R
 \name{fars_summarize_years}
 \alias{fars_summarize_years}
-\title{Produce a Summary of FARS Files.}
+\title{fars_summarize_years}
 \usage{
 fars_summarize_years(years)
 }
 \arguments{
-\item{years}{Vector of years' FARS files to open.  Vector members must be
-an integer, or a string or numeric that can be coerced to a string.}
+\item{years}{the numeric vector of years which are being search for.}
 }
 \value{
-This function returns tibble where the first column is the month,
-  the second and following columns are the requested years, and the
-  rows for the year columns are the number of FARS observations for
-  that month/year combination.  The returned columns are only for years
-  with valid FARS data. If no valid years are found, the function
-  well error out.
+returns  tibble of the number of autocollisions in each month over the span
+of years
 }
 \description{
-\code{fars_summarize_years} produces a summary tibble of FARS years and
-  months given a vector of years.
-}
-\details{
-This function takes a vector of years, pulls the FARS data for
-  those years, and then produces a summary tibble. The summary tibble shows
-  the number of observations for each month/year combination for the
-  extracted FARS data. For this function to work properly, the years must
-  be years with valid data.
+A funtion which takes a 4 digit vector \code{years}, reads FARS data into a list of dataframes via
+\code{fars_read_years} then aggregates the the data into a tibble of the number of fatal
+autocollisions in each month spread across the span of years
 }
 \examples{
-fars_summarize_years(years = c(2013, 2014, 2015))
-fars_summarize_years(years = 2013)
-
-\dontrun{
-fars_summarize_years(years = 2000)
-}
+\dontrun{fars_summarize_years(years = c(2013, 2014, 2015))}
 
 }
